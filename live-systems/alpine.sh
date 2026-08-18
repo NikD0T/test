@@ -899,7 +899,7 @@ main_menu() {
     echo ""
     msg bright_yellow "  disk encryption script by nik durachyo"
     echo ""
-    for ((i = 1; i <= #TAB_NAMES[@]; i++)); do
+    for ((i = 1; i <= ${#TAB_NAMES[@]}; i++)); do
       p_bright_yellow "  [$i] "
       msg yellow "${TAB_NAMES[$((i - 1))]}"
     done
