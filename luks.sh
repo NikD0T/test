@@ -38,6 +38,7 @@ msg() {
 prepare_alpine() {
   msg yellow "Preparing Alpine..."
 
+  rm -f /etc/apk/repositories
   if ! setup-apkrepos -1 || ! setup-apkrepos -r; then
     msg red "Failed to set up apk repositories"
     return 1
