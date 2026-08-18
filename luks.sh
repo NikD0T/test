@@ -80,7 +80,7 @@ main() {
   esac
 
   msg yellow "Downloading and running the main script..."
-  wget -qO "$ID-luks.sh" "https://raw.githubusercontent.com/NikD0T/luks/main/live-systems/$ID.sh" || {
+  wget -qO "$ID-luks.sh" "https://raw.githubusercontent.com/NikD0T/test/main/live-systems/$ID.sh" || {
     msg red "Failed to download the main script"
     return 1
   }
