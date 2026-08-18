@@ -189,11 +189,7 @@ detect_target_interfaces() {
 # === UI HELPERS ===
 TAB_NAMES=(
   "Disk Selection"
-  "System Configuration"
-  "Secure Server"
-  "Custom CA"
-  "Soft"
-  "Certbot (Cloudflare DNS)"
+  "Dropbear Configuration"
   "Confirmation"
 )
 
@@ -321,7 +317,7 @@ page_disks() {
     echo ""
     msg gray "  [ 0]  Back"
     echo ""
-    read -r -e -p "$(p_bright_yellow "  > ")" input
+    read -r -e -p "$(p_bright_yellow "  > ")" input || return
 
     case "$input" in
     0) return ;;
@@ -346,7 +342,7 @@ page_disks() {
           echo ""
           msg gray "  [0] Back"
           echo ""
-          read -r -e -p "$(p_bright_yellow "  > ")" input
+          read -r -e -p "$(p_bright_yellow "  > ")" input || break
           [[ "$input" == "0" ]] && break
           continue
         fi
@@ -370,7 +366,7 @@ page_disks() {
         echo ""
         msg gray "  [0] Back"
         echo ""
-        read -r -e -p "$(p_bright_yellow "  Select partition > ")" input
+        read -r -e -p "$(p_bright_yellow "  Select partition > ")" input || break
 
         [[ "$input" == "0" ]] && break
 
@@ -391,13 +387,13 @@ page_disks() {
     2)
       while true; do
         echo ""
-        read -r -s -p "$(p_yellow "  Enter LUKS password: ")" pass1
+        read -r -s -p "$(p_yellow "  Enter LUKS password: ")" pass1 || break
         echo ""
         if [[ -z "$pass1" ]]; then
           msg bright_red "  Password cannot be empty"
           continue
         fi
-        read -r -s -p "$(p_yellow "  Confirm LUKS password: ")" pass2
+        read -r -s -p "$(p_yellow "  Confirm LUKS password: ")" pass2 || break
         echo ""
         if [[ "$pass1" != "$pass2" ]]; then
           msg bright_red "  Passwords do not match"
@@ -465,7 +461,7 @@ page_dropbear() {
     echo ""
     msg gray "  [ 0]  Back"
     echo ""
-    read -r -e -p "$(p_bright_yellow "  > ")" input
+    read -r -e -p "$(p_bright_yellow "  > ")" input || return
 
     case "$input" in
     0) return ;;
@@ -473,7 +469,7 @@ page_dropbear() {
     1)
       while true; do
         echo ""
-        read -r -e -p "$(p_yellow "  Port (empty for 45055, 1024-65535, /c to cancel): ")" val
+        read -r -e -p "$(p_yellow "  Port (empty for 45055, 1024-65535, /c to cancel): ")" val || break
         [[ "$val" == "/c" ]] && break
         if [[ -z "$val" ]]; then
           config_set DB_PORT "45055"
@@ -497,7 +493,7 @@ page_dropbear() {
           p_gray "$cur_key"
           echo ""
         }
-        read -r -e -p "$(p_yellow "  SSH public key (empty to generate, /c to cancel): ")" val
+        read -r -e -p "$(p_yellow "  SSH public key (empty to generate, /c to cancel): ")" val || break
         [[ "$val" == "/c" ]] && break
         if [[ -z "$val" ]]; then
           local key_dir="/var/lib/luks-keys"
@@ -534,7 +530,7 @@ page_dropbear() {
           p_gray "$cur_iface"
           echo ""
         }
-        read -r -e -p "$(p_yellow "  Interface name (empty to clear, /c to cancel): ")" val
+        read -r -e -p "$(p_yellow "  Interface name (empty to clear, /c to cancel): ")" val || break
         [[ "$val" == "/c" ]] && break
         if [[ -z "$val" ]]; then
           config_set DB_INTERFACE ""
@@ -604,7 +600,7 @@ page_confirmation() {
     echo ""
     msg gray "  [ 0]  Back"
     echo ""
-    read -r -e -p "$(p_bright_yellow "  > ")" input
+    read -r -e -p "$(p_bright_yellow "  > ")" input || return 1
 
     case "$input" in
     0) return 1 ;;
@@ -895,7 +891,7 @@ run_encryption() {
 # === MAIN MENU ===
 main_menu() {
   echo ""
-  msg red "  [!] Be careful! This script is intended to be run from a LiveCD and to operate on a clean system. A "clean system" means a freshly installed system with no user data or configuration."
+  msg red "  [!] Be careful! This script is intended to be run from a LiveCD and to operate on a clean system. A \"clean system\" means a freshly installed system with no user data or configuration."
   msg red "  [!!] The encryption process carries an extremely high risk of data loss."
   msg red "  [!!!] Running this script on a system that is not clean is unsupported. It may fail unexpectedly, terminate with errors, or leave the system in an inconsistent state."
 
@@ -903,13 +899,13 @@ main_menu() {
     echo ""
     msg bright_yellow "  disk encryption script by nik durachyo"
     echo ""
-    for ((i = 1; i <= 7; i++)); do
+    for ((i = 1; i <= #TAB_NAMES[@]; i++)); do
       p_bright_yellow "  [$i] "
       msg yellow "${TAB_NAMES[$((i - 1))]}"
     done
     msg gray "  [0] Exit"
     echo ""
-    read -r -e -p "$(p_bright_yellow "  Select page > ")" choice
+    read -r -e -p "$(p_bright_yellow "  Select page > ")" choice || exit 0
 
     case "$choice" in
     0)
