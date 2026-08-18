@@ -7,7 +7,7 @@ p_yellow() { printf "\033[0;33m%s\033[0m" "$1"; }
 p_red() { printf "\033[0;31m%s\033[0m" "$1"; }
 
 msg() {
-  local color=$1 text=$2
+  color=$1 text=$2
   "p_${color}" "$text"
   echo
 }
@@ -46,11 +46,10 @@ prepare_alpine() {
     msg red "Failed to set up apk repositories"
     return 1
   }
-  apk add --no-cache -q cryptsetup e2fsprogs lsblk parted udev bash dropbear ||
-    {
-      msg red "Failed to install required packages"
-      return 1
-    }
+  apk add --no-cache -q cryptsetup e2fsprogs lsblk parted udev bash dropbear || {
+    msg red "Failed to install required packages"
+    return 1
+  }
 }
 
 main() {
