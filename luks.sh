@@ -80,6 +80,12 @@ main() {
     return 1
   }
   chmod +x "$ID-luks.sh"
+  if [ ! -t 0 ]; then
+    exec 0</dev/tty || {
+      msg red "No interactive terminal available. Exiting."
+      return 1
+    }
+  fi
   bash "$ID-luks.sh" || {
     msg red "Main script exited with code $?"
     return 1
