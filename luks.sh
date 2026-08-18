@@ -38,7 +38,14 @@ msg() {
 prepare_alpine() {
   msg yellow "Preparing Alpine..."
 
-  rm -f /etc/apk/repositories; setup-apkrepos -1 || {rm -f /etc/apk/repositories; setup-apkrepos -r} || { msg red "Failed to set up apk repositories"; return 1 }
+  rm -f /etc/apk/repositories
+  setup-apkrepos -1 || {
+    rm -f /etc/apk/repositories
+    setup-apkrepos -r
+  } || {
+    msg red "Failed to set up apk repositories"
+    return 1
+  }
   apk add --no-cache -q cryptsetup e2fsprogs lsblk parted udev bash dropbear ||
     {
       msg red "Failed to install required packages"
