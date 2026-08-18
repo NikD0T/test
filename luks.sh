@@ -39,20 +39,21 @@ prepare_alpine() {
   msg yellow "Preparing Alpine..."
 
   rm -f /etc/apk/repositories
-  setup-apkrepos -1 || {
+  setup-apkrepos -1 >/dev/null 2>&1 || {
     rm -f /etc/apk/repositories
-    setup-apkrepos -r
+    setup-apkrepos -r >/dev/null 2>&1
   } || {
     msg red "Failed to set up apk repositories"
     return 1
   }
-  apk add --no-cache -q cryptsetup e2fsprogs lsblk parted udev bash dropbear || {
+  apk add --no-cache -q cryptsetup e2fsprogs lsblk parted udev bash dropbear >/dev/null 2>&1 || {
     msg red "Failed to install required packages"
     return 1
   }
 }
 
 main() {
+  echo
   msg yellow "Starting prepare script..."
 
   [ -f /etc/os-release ] && . /etc/os-release
@@ -75,7 +76,7 @@ main() {
   esac
 
   msg yellow "Downloading and running the main script..."
-  wget -qO "$ID-luks.sh" "https://raw.githubusercontent.com/NikD0T/test/main/live-systems/$ID.sh" || {
+  wget -qO "$ID-luks.sh" "https://raw.githubusercontent.com/NikD0T/test/main/live-systems/$ID.sh" 2>/dev/null || {
     msg red "Failed to download the main script"
     return 1
   }
