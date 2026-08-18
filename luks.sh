@@ -14,47 +14,47 @@ msg() {
 
 # === ROOT CHECK ===
 [ "$(id -u)" -ne 0 ] && {
-  msg red "No root access. Exiting."
+  msg red "  No root access. Exiting."
   exit 1
 }
 
 # === LIVECD CHECK ===
 [ "$(awk '$2 == "/" { print $3 }' /proc/mounts)" != "tmpfs" ] && {
-  msg red "This script must be run from LiveCD. Exiting."
+  msg red "  This script must be run from LiveCD. Exiting."
   exit 1
 }
 
 # === INTERNET CHECK ===
 ! ping -c 1 1.1.1.1 >/dev/null 2>&1 && ! ping -c 1 8.8.8.8 >/dev/null 2>&1 && {
-  msg red "No internet connection. Exiting."
+  msg red "  No internet connection. Exiting."
   exit 1
 }
 ! ping -c 1 cloudflare.com >/dev/null 2>&1 && ! ping -c 1 google.com >/dev/null 2>&1 && {
-  msg red "Please check your DNS settings. Exiting."
+  msg red "  Please check your DNS settings. Exiting."
   exit 1
 }
 
 # === MAIN SCRIPT ===
 prepare_alpine() {
-  msg yellow "Preparing Alpine..."
+  msg yellow "  Preparing Alpine..."
 
   rm -f /etc/apk/repositories
   setup-apkrepos -1 >/dev/null 2>&1 || {
     rm -f /etc/apk/repositories
     setup-apkrepos -r >/dev/null 2>&1
   } || {
-    msg red "Failed to set up apk repositories"
+    msg red "  Failed to set up apk repositories"
     return 1
   }
   apk add --no-cache -q cryptsetup e2fsprogs lsblk parted udev bash dropbear >/dev/null 2>&1 || {
-    msg red "Failed to install required packages"
+    msg red "  Failed to install required packages"
     return 1
   }
 }
 
 main() {
   echo
-  msg yellow "Starting prepare script..."
+  msg yellow "  Starting prepare script..."
 
   [ -f /etc/os-release ] && . /etc/os-release
   case "$ID" in
@@ -63,32 +63,32 @@ main() {
     VERSION_ID_MINOR="${VERSION_ID#*.}"
     VERSION_ID_MINOR="${VERSION_ID_MINOR%%.*}"
     if [ "$VERSION_ID_MAJOR" -lt 3 ] || { [ "$VERSION_ID_MAJOR" -eq 3 ] && [ "$VERSION_ID_MINOR" -lt 23 ]; }; then
-      msg red "Alpine 3.23+ required. Current version: $VERSION_ID. Exiting."
+      msg red "  Alpine 3.23+ required. Current version: $VERSION_ID. Exiting."
       return 1
     fi
     prepare_alpine || return 1
     ;;
   *)
-    msg red "System '${ID:-unknown}' is not supported."
-    msg yellow "Supported systems: alpine"
+    msg red "  System '${ID:-unknown}' is not supported."
+    msg yellow "  Supported systems: alpine"
     return 1
     ;;
   esac
 
-  msg yellow "Downloading and running the main script..."
+  msg yellow "  Downloading and running the main script..."
   wget -qO "$ID-luks.sh" "https://raw.githubusercontent.com/NikD0T/test/main/live-systems/$ID.sh" 2>/dev/null || {
-    msg red "Failed to download the main script"
+    msg red "  Failed to download the main script"
     return 1
   }
   chmod +x "$ID-luks.sh"
   if [ ! -t 0 ]; then
     exec 0</dev/tty || {
-      msg red "No interactive terminal available. Exiting."
+      msg red "  No interactive terminal available. Exiting."
       return 1
     }
   fi
   bash "$ID-luks.sh" || {
-    msg red "Main script exited with code $?"
+    msg red "  Main script exited with code $?"
     return 1
   }
 }
