@@ -32,7 +32,7 @@ DB_PORT="45055"
    ```bash
     sudo ifconfig eth0 192.168.1.100 netmask 255.255.255.0 up
     sudo route add default gw 192.168.1.1
-    ip route add default via 192.168.1.254
+    ip route add default via 192.168.1.1
     echo -e "nameserver 8.8.8.8\nnameserver 1.1.1.1" | sudo tee /etc/resolv.conf
    ```
 2. setup-apkrepos -r

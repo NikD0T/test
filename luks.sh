@@ -38,14 +38,10 @@ msg() {
 prepare_alpine() {
   msg yellow "Preparing Alpine..."
 
-  setup-apkrepos -1 || {
-    msg red "Failed to set up apk repositories (1)"
+  if ! setup-apkrepos -1 || ! setup-apkrepos -r; then
+    msg red "Failed to set up apk repositories"
     return 1
-  }
-  setup-apkrepos -r || {
-    msg red "Failed to set up apk repositories (r)"
-    return 1
-  }
+  fi
   apk update || {
     msg red "apk update failed"
     return 1
@@ -70,7 +66,7 @@ main() {
       msg red "Alpine 3.23+ required. Current version: $VERSION_ID. Exiting."
       return 1
     fi
-    prepare_alpine
+    prepare_alpine || return 1
     ;;
   *)
     msg red "System '${ID:-unknown}' is not supported."
